@@ -63,11 +63,17 @@ A list of other roles hosted on Galaxy should go here, plus any details in regar
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+This role is intended to be used in other role, the main.yml is like the following:
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+```yaml
+---
+# tasks file for dns
+- name: Create and run DNS pod service
+  import_role:
+    name: servideo.pod.service
+```
+
+But you will have to update the vars and Dockerfile.j2 template accordingly.
 
 License
 -------
