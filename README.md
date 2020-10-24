@@ -1,2 +1,2 @@
 # podman_service
-A systemd podman based service
+A systemd pod based service

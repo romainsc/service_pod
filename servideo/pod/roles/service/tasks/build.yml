@@ -1,0 +1,11 @@
+- name: Build "{{ service_name }}" container image
+  containers.podman.podman_image:
+          name: "{{ service_container_image_name }}"
+          path: "{{ build_basedir }}{{ builddir }}"
+          force: true
+          username: "{{ redhat_portal_username }}"
+          password: "{{ redhat_portal_password }}"
+          build:
+            annotation:
+             app: "{{ service_container_image_name }}"
+

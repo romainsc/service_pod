@@ -1,0 +1,12 @@
+[Unit]
+Description=Socat proxy for {{ service_name }} {{ item.protocol }} port {{ item.ext_port }}
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/socat -T15 {{ item.protocol }}-listen:{{ item.ext_port }},fork,reuseaddr,bind={{ ext_ip_address }} udp:localhost:{{ item.host_port }}
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+
+

@@ -1,0 +1,17 @@
+---
+# vars file for dns
+service_user: "coredns"
+service_name: "CoreDNS"
+builddir: "build"
+build_basedir: "/tmp/"
+service_container_image_name: "coredns"
+port_mapping:
+  - exposed_port: "53"
+    host_port: "1053"
+    ext_port: "53"
+    protocol: "udp"
+  - exposed_port: "53"
+    host_port: "1053"
+    ext_port: "53"
+    protocol: "tcp"
+service_files_dir: /etc/systemd/system

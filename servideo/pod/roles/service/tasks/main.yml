@@ -1,0 +1,28 @@
+---
+# tasks file for dns
+- name: Create user for running "{{ service_name }}"
+  import_tasks: create_user.yml
+  become: true
+- name: Prepare the "{{ service_name }}" build environment
+  import_tasks: prepare_build.yml
+  become: true
+  become_user: "{{ service_user }}"
+- name: Build the "{{ service_name }}" container image
+  import_tasks: build.yml
+  become: true
+  become_user: "{{ service_user }}"
+- name: Clean the "{{ service_name }}" build space
+  import_tasks: clean_builddir.yml
+  become: true
+  become_user: "{{ service_user }}"
+- name: Deploy the "{{ service_name }}" systemd unit
+  import_tasks: deploy.yml
+  become: true
+- name: Set up port forwarding for "{{ service_name }}"
+  import_tasks: port_forward.yml
+  become: true
+
+
+
+
+- 

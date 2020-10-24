@@ -1,0 +1,21 @@
+- name: Create the build directory if it does not exist
+  file:
+    path: "{{ build_basedir }}/{{ builddir }}"
+    state: directory
+- name: Copy the Dockerfile
+  template:
+    src: Dockerfile.j2
+    dest: "{{ build_basedir }}/{{ builddir }}/Dockerfile"
+- name: Copy the DNS Corefile
+  copy:
+    src: "{{ servideo_config_dir }}dns/Corefile"
+    dest: "{{ build_basedir }}/{{ builddir }}"
+- name: Copy the DB files directory
+  copy:
+    src: "{{ servideo_config_dir }}dns/db"
+    dest: "{{ build_basedir }}/{{ builddir }}"
+- name: Copy the dnssec keys directory
+  copy:
+    src: "{{ servideo_config_dir }}dns/keys"
+    dest: "{{ build_basedir }}/{{ builddir }}"
+
