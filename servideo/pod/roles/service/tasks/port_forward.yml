@@ -1,10 +1,11 @@
 - name: Enable service port {{ service_name }}
   firewalld:
-    service: dns
+    port: {{ item.ext_port }}/{{ item.protocol }}
     zone: public
     permanent: yes
     immediate: yes
     state: enabled
+  loop: "{{ port_mapping }}"
 - name: Check socat is installed
   package:
     name: socat
