@@ -3,24 +3,34 @@
 - name: Create user for running "{{ service_name }}"
   import_tasks: create_user.yml
   become: true
+  tags: install
 - name: Prepare the "{{ service_name }}" build environment
   import_tasks: prepare_build.yml
   become: true
   become_user: "{{ service_user }}"
+  tags: install
 - name: Build the "{{ service_name }}" container image
   import_tasks: build.yml
   become: true
   become_user: "{{ service_user }}"
+  tags: install
 - name: Clean the "{{ service_name }}" build space
   import_tasks: clean_builddir.yml
   become: true
   become_user: "{{ service_user }}"
+  tags: install
 - name: Deploy the "{{ service_name }}" systemd unit
   import_tasks: deploy.yml
   become: true
+  tags: install
 - name: Set up port forwarding for "{{ service_name }}"
   import_tasks: port_forward.yml
   become: true
+  tags: install
+- name: Remove the dns service
+  import_tasks: undeploy.yml
+  become: true
+  tags: uninstall
 
 
 

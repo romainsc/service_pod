@@ -1,6 +1,0 @@
-- name: Delete systemd
-  vars:
-    container_name: coredns
-    container_state: absent
-  import_role:
-    name: ikke_t.podman_container_systemd

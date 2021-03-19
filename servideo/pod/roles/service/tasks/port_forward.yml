@@ -1,6 +1,6 @@
 - name: Enable service port {{ service_name }}
   firewalld:
-    port: {{ item.ext_port }}/{{ item.protocol }}
+    port: "{{ item.ext_port }}/{{ item.protocol }}"
     zone: public
     permanent: yes
     immediate: yes

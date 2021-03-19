@@ -1,0 +1,64 @@
+- name: Delete systemd {{ service_name }} service
+  vars:
+    container_name: {{ service_container_image_name }}
+    container_state: absent
+  import_role:
+    name: ikke_t.podman_container_systemd
+- name: Disable service port {{ service_name }}
+  firewalld:
+    port: {{ item.ext_port }}/{{ item.protocol }}
+    zone: public
+    permanent: yes
+    immediate: yes
+    state: disable
+  loop: "{{ port_mapping }}"
+
+- name: Disable socat proxy to {{ service_name }}
+  systemd:
+    name: "proxy-to-{{ service_name }}-port-{{ item.ext_port }}"
+    enabled: no
+    daemon_reload: yes
+  loop: "{{ port_mapping }}"
+  when: item.protocol == "udp"
+- name: Stop socat proxy to {{ service_name }}
+  systemd:
+    name: "proxy-to-{{ service_name }}-port-{{ item.ext_port }}"
+    state: stopped
+  loop: "{{ port_mapping }}"
+  when: item.protocol == "udp"
+- name: Remove the service file of socat proxy/proxies to {{ service_name }}
+  file:
+    path: "{{ service_files_dir }}/proxy-to-{{ service_name }}-port-{{ item.ext_port }}.service"
+    state: absent
+  loop: "{{ port_mapping }}"
+  when: item.protocol == "udp"
+  register: service_file
+
+- name: Disable proxyd socket to {{ service_name }}
+  systemd:
+    name: "proxyd-to-{{ service_name }}-{{ item.protocol }}-port-{{ item.ext_port }}.socket"
+    enabled: no
+    daemon_reload: yes
+  loop: "{{ port_mapping }}"
+  when: item.protocol == "tcp"
+- name: Stop proxyd socket to {{ service_name }}
+  systemd:
+    name: "proxyd-to-{{ service_name }}-{{ item.protocol }}-port-{{ item.ext_port }}.socket"
+    state: stopped
+  loop: "{{ port_mapping }}"
+  when: item.protocol == "tcp"
+- name: Remove the socket stream file for proxyd for {{ service_name }}
+  file:
+    path: "{{ service_files_dir }}/proxyd-to-{{ service_name }}-{{ item.protocol }}-port-{{ item.ext_port }}.socket"
+    state: absent
+  register: socket_file
+  loop: "{{ port_mapping }}"
+  when: item.protocol == "tcp"
+- name: Remove service file for systemd stream service(s) for proxyd for {{ service_name }}
+  file:
+    path: "{{ service_files_dir }}/proxyd-to-{{ service_name }}-{{ item.protocol }}-port-{{ item.ext_port }}.service"
+    state: absent
+  register: service_file
+  loop: "{{ port_mapping }}"
+  when: item.procol == "tcp"
+
