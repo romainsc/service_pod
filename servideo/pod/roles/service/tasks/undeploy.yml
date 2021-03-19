@@ -1,16 +1,16 @@
 - name: Delete systemd {{ service_name }} service
   vars:
-    container_name: {{ service_container_image_name }}
+    container_name: "{{ service_container_image_name }}"
     container_state: absent
   import_role:
     name: ikke_t.podman_container_systemd
 - name: Disable service port {{ service_name }}
   firewalld:
-    port: {{ item.ext_port }}/{{ item.protocol }}
+    port: "{{ item.ext_port }}/{{ item.protocol }}"
     zone: public
     permanent: yes
     immediate: yes
-    state: disable
+    state: disabled
   loop: "{{ port_mapping }}"
 
 - name: Disable socat proxy to {{ service_name }}
@@ -60,5 +60,5 @@
     state: absent
   register: service_file
   loop: "{{ port_mapping }}"
-  when: item.procol == "tcp"
+  when: item.protocol == "tcp"
 
