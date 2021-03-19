@@ -1,0 +1,4 @@
+- name: Remove "{{ service_name }}" container image
+  containers.podman.podman_image:
+          name: "{{ service_container_image_name }}"
+          state: absent
