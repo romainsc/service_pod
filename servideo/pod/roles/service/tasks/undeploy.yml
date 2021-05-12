@@ -15,6 +15,11 @@
     state: disabled
   loop: "{{ port_mapping }}"
 
+- name: Set system dir at system scope (as proxies listen on restricted ports)
+  set_fact:
+    service_files_dir: '/etc/systemd/system'
+  changed_when: false
+
 - name: Disable socat proxy to {{ service_name }}
   systemd:
     name: "proxy-to-{{ service_systemd_name }}-port-{{ item.ext_port }}"

@@ -20,11 +20,3 @@
   import_role:
     name: ikke_t.podman_container_systemd
 
-- name: Restart the service
-  become: true
-  become_user: "{{ service_user }}"
-  systemd:
-   name: "{{ service_systemd_name }}-container-pod-{{ service_user }}.service" 
-   scope: user
-   state: restarted
-
