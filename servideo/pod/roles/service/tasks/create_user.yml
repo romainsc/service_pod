@@ -1,10 +1,10 @@
 - name: Add ”{{ service_name }}” system account
   user:
     name: "{{ service_user }}"
-    comment: "{{ service_name }} system account"
+    comment: "{{ service_systemd_name }} system account"
     system: yes
     state: present
-- name: Check "{{ service_name }}" subid
+- name: Check "{{ service_systemd_name }}" subid
   import_role:
     name: ikke_t.podman_container_systemd
     tasks_from: check_subid

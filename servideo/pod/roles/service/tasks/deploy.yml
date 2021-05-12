@@ -1,4 +1,4 @@
-- name: Initi the podman port mapping args
+- name: Init the podman port mapping args
   set_fact:
     podman_port_mapping_args: ""
 
@@ -7,12 +7,12 @@
     podman_port_mapping_args: "{{ podman_port_mapping_args }} -p {{ item.host_port }}:{{ item.exposed_port }}/{{ item.protocol }}"
   loop: "{{ port_mapping }}"
 
-- name: Register "{{ service_name }}" systemd unit
+- name: Register "{{ service_systemd_name }}" systemd unit
   vars:
     container_run_as_user: "{{ service_user }}"
     container_run_as_group: "{{ service_user }}"
-    container_image: "{{ service_container_image_name }}"
-    container_name: "{{ service_container_image_name }}_run"
+    container_image_list: "{{ service_container_image_names }}"
+    container_name: "{{ service_systemd_name }}"
     container_run_args: >-
       --rm
       {{ podman_port_mapping_args }}
@@ -21,7 +21,10 @@
     name: ikke_t.podman_container_systemd
 
 - name: Restart the service
+  become: true
+  become_user: "{{ service_user }}"
   systemd:
-   name: "{{ service_container_image_name }}_run-container-pod.service"
+   name: "{{ service_systemd_name }}-container-pod-{{ service_user }}.service" 
+   scope: user
    state: restarted
 

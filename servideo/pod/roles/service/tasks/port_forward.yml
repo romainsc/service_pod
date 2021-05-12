@@ -1,3 +1,8 @@
+- name: Set system dir at system scope (as proxies listen on restricted ports)
+  set_fact:
+    service_files_dir: '/etc/systemd/system'
+  changed_when: false
+
 - name: Enable service port {{ service_name }}
   firewalld:
     port: "{{ item.ext_port }}/{{ item.protocol }}"
@@ -13,7 +18,7 @@
 - name: Deploy the socat proxy/proxies to {{ service_name }}
   template:
     src: systemd-service-proxy-socat.j2
-    dest: "{{ service_files_dir }}/proxy-to-{{ service_name }}-port-{{ item.ext_port }}.service"
+    dest: "{{ service_files_dir }}/proxy-to-{{ service_systemd_name }}-port-{{ item.ext_port }}.service"
     owner: root
     group: root
   loop: "{{ port_mapping }}"
@@ -21,22 +26,24 @@
   register: service_file
 - name: Ensure socat proxy to {{ service_name }} is enabled at boot
   systemd:
-    name: "proxy-to-{{ service_name }}-port-{{ item.ext_port }}"
+    name: "proxy-to-{{ service_systemd_name }}-port-{{ item.ext_port }}"
     enabled: yes
     daemon_reload: yes
+    scope: system
   loop: "{{ port_mapping }}"
   when: item.protocol == "udp"
 - name: Ensure socat proxy to {{ service_name }} is started
   systemd:
-    name: "proxy-to-{{ service_name }}-port-{{ item.ext_port }}"
+    name: "proxy-to-{{ service_systemd_name }}-port-{{ item.ext_port }}"
     state: started
+    scope: system
   loop: "{{ port_mapping }}"
   when: item.protocol == "udp"
 
 - name: Setup systemd stream socket(s) for proxyd for {{ service_name }}
   template:
     src: systemd-socket-proxyd.j2
-    dest: "{{ service_files_dir }}/proxyd-to-{{ service_name }}-{{ item.protocol }}-port-{{ item.ext_port }}.socket"
+    dest: "{{ service_files_dir }}/proxyd-to-{{ service_systemd_name }}-{{ item.protocol }}-port-{{ item.ext_port }}.socket"
     owner: root
     group: root
   register: socket_file
@@ -45,7 +52,7 @@
 - name: Setup systemd stream service(s) for proxyd for {{ service_name }}
   template:
     src: systemd-service-proxyd.j2
-    dest: "{{ service_files_dir }}/proxyd-to-{{ service_name }}-{{ item.protocol }}-port-{{ item.ext_port }}.service"
+    dest: "{{ service_files_dir }}/proxyd-to-{{ service_systemd_name }}-{{ item.protocol }}-port-{{ item.ext_port }}.service"
     owner: root
     group: root
   register: service_file
@@ -53,15 +60,17 @@
   when: item.protocol == "tcp"
 - name: Ensure proxyd socket to {{ service_name }} is enabled at boot
   systemd:
-    name: "proxyd-to-{{ service_name }}-{{ item.protocol }}-port-{{ item.ext_port }}.socket"
+    name: "proxyd-to-{{ service_systemd_name }}-{{ item.protocol }}-port-{{ item.ext_port }}.socket"
     enabled: yes
     daemon_reload: yes
+    scope: system
   loop: "{{ port_mapping }}"
   when: item.protocol == "tcp"
 - name: Ensure proxyd socket to {{ service_name }} is started
   systemd:
-    name: "proxyd-to-{{ service_name }}-{{ item.protocol }}-port-{{ item.ext_port }}.socket"
+    name: "proxyd-to-{{ service_systemd_name }}-{{ item.protocol }}-port-{{ item.ext_port }}.socket"
     state: started
+    scope: system
   loop: "{{ port_mapping }}"
   when: item.protocol == "tcp"
 
