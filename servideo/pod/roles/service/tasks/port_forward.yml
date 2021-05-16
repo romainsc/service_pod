@@ -11,6 +11,7 @@
     immediate: yes
     state: enabled
   loop: "{{ port_mapping }}"
+  when: item.ext_port is defined
 - name: Check socat is installed
   package:
     name: socat
@@ -18,60 +19,74 @@
 - name: Deploy the socat proxy/proxies to {{ service_name }}
   template:
     src: systemd-service-proxy-socat.j2
-    dest: "{{ service_files_dir }}/proxy-to-{{ service_systemd_name }}-port-{{ item.ext_port }}.service"
+    dest: "{{ service_files_dir }}/proxy-to-{{ service_systemd_name }}-port-{{ item.ext_port|default('None') }}.service"
     owner: root
     group: root
   loop: "{{ port_mapping }}"
-  when: item.protocol == "udp"
+  when:
+    - item.protocol == "udp"
+    - item.ext_port is defined
   register: service_file
 - name: Ensure socat proxy to {{ service_name }} is enabled at boot
   systemd:
-    name: "proxy-to-{{ service_systemd_name }}-port-{{ item.ext_port }}"
+    name: "proxy-to-{{ service_systemd_name }}-port-{{ item.ext_port|default('None') }}"
     enabled: yes
     daemon_reload: yes
     scope: system
   loop: "{{ port_mapping }}"
-  when: item.protocol == "udp"
+  when:
+    - item.protocol == "udp"
+    - item.ext_port is defined 
 - name: Ensure socat proxy to {{ service_name }} is started
   systemd:
-    name: "proxy-to-{{ service_systemd_name }}-port-{{ item.ext_port }}"
+    name: "proxy-to-{{ service_systemd_name }}-port-{{ item.ext_port|default('None') }}"
     state: restarted
     scope: system
   loop: "{{ port_mapping }}"
-  when: item.protocol == "udp"
+  when:
+    - item.protocol == "udp"
+    - item.ext_port is defined 
 
 - name: Setup systemd stream socket(s) for proxyd for {{ service_name }}
   template:
     src: systemd-socket-proxyd.j2
-    dest: "{{ service_files_dir }}/proxyd-to-{{ service_systemd_name }}-{{ item.protocol }}-port-{{ item.ext_port }}.socket"
+    dest: "{{ service_files_dir }}/proxyd-to-{{ service_systemd_name }}-{{ item.protocol }}-port-{{ item.ext_port|default('None') }}.socket"
     owner: root
     group: root
   register: socket_file
   loop: "{{ port_mapping }}"
-  when: item.protocol == "tcp"
+  when:
+    - item.protocol == "tcp"
+    - item.ext_port is defined 
 - name: Setup systemd stream service(s) for proxyd for {{ service_name }}
   template:
     src: systemd-service-proxyd.j2
-    dest: "{{ service_files_dir }}/proxyd-to-{{ service_systemd_name }}-{{ item.protocol }}-port-{{ item.ext_port }}.service"
+    dest: "{{ service_files_dir }}/proxyd-to-{{ service_systemd_name }}-{{ item.protocol }}-port-{{ item.ext_port|default('None') }}.service"
     owner: root
     group: root
   register: service_file
   loop: "{{ port_mapping }}"
-  when: item.protocol == "tcp"
+  when:
+    - item.protocol == "tcp"
+    - item.ext_port is defined 
 - name: Ensure proxyd socket to {{ service_name }} is enabled at boot
   systemd:
-    name: "proxyd-to-{{ service_systemd_name }}-{{ item.protocol }}-port-{{ item.ext_port }}.socket"
+    name: "proxyd-to-{{ service_systemd_name }}-{{ item.protocol }}-port-{{ item.ext_port|default('None') }}.socket"
     enabled: yes
     daemon_reload: yes
     scope: system
   loop: "{{ port_mapping }}"
-  when: item.protocol == "tcp"
+  when:
+    - item.protocol == "tcp"
+    - item.ext_port is defined 
 - name: Ensure proxyd socket to {{ service_name }} is started
   systemd:
-    name: "proxyd-to-{{ service_systemd_name }}-{{ item.protocol }}-port-{{ item.ext_port }}.socket"
+    name: "proxyd-to-{{ service_systemd_name }}-{{ item.protocol }}-port-{{ item.ext_port|default('None') }}.socket"
     state: restarted
     scope: system
   loop: "{{ port_mapping }}"
-  when: item.protocol == "tcp"
+  when:
+    - item.protocol == "tcp"
+    - item.ext_port is defined 
 
 
