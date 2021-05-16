@@ -1,15 +1,8 @@
 ---
-# tasks file for dns
+# tasks file for service
 - name: Prepare, build, install and enable {{ service_name }} container
   block:
 
-  - name: Create user for running "{{ service_systemd_name }}"
-    import_tasks: create_user.yml
-    become: true
-  - name: Prepare the "{{ service_systemd_name }}" build environment
-    import_tasks: prepare_build.yml
-    become: true
-    become_user: "{{ service_user }}"
   - name: Build the "{{ service_systemd_name }}" container image
     import_tasks: build.yml
     become: true
