@@ -1,0 +1,28 @@
+- name: Check socat is installed
+  package:
+    name: socat
+    state: present
+- name: 
+- name: Deploy the socat proxy/proxies to {{ service_systemd_name }}
+  template:
+    src: systemd-service-proxy-socat.j2
+    dest: "{{ systemd_unit_file_basename }}.service"
+    owner: root
+    group: root
+- name: Ensure socat proxy to {{ service_systemd_name }} is enabled at boot
+  systemd:
+    name: "{{ systemd_unit_name }}"
+    enabled: yes
+    daemon_reload: yes
+    scope: system
+- name: Ensure socat proxy to {{ service_systemd_name }} is stopped
+  systemd:
+    name: "{{ systemd_unit_name }}"
+    state: stopped
+    scope: system
+- name: Ensure socat proxy to {{ service_systemd_name }} is started
+  systemd:
+    name: "{{ systemd_unit_name }}"
+    state: restarted
+    scope: system
+

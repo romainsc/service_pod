@@ -1,0 +1,19 @@
+- name: Copy "{{ directory }}" on host
+  copy:
+    src: "{{ servideo_config_dir }}{{service_systemd_name}}/{{ directory }}"
+    dest: "{{ ansible_env.HOME }}/{{ directory }}"
+
+- name: Set SElinux labels
+  become: true
+  become_user: root
+  sefcontext:
+    target: '{{ ansible_env.HOME }}/{{ directory }}(/.*)?'
+    setype: {{ item }}
+    state: present
+  loop: "{{ selinux_labels }}"
+
+- name: Apply new SELinux file context to filesystem
+  command: restorecon -irv "{{ ansible_env.HOME }}/{{ directory }}"
+  become: true
+  become_user: root
+

@@ -1,0 +1,21 @@
+- name: Open firewall port {{ port }}
+  firewalld:
+    port: "{{ port }}"
+    zone: public
+    permanent: yes
+    immediate: yes
+    state: enabled
+
+- name: Set up socat for {{ port }}
+  import_tasks: proxy_socat.yaml
+  vars:
+    systemd_unit_name: "socat-to-{{ service_systemd_name }}-port-{{ ext_port }}"
+    systemd_unit_file_basename: "{{ service_files_dir }}/{{ systemd_unit_name }}"
+  when: protocol == "udp"
+
+- name: Set up proxyd for {{ port }}
+  import_tasks: proxyd.yaml
+    systemd_unit_name: "proxyd-to-{{ service_systemd_name }}-port-{{ ext_port }}"
+    systemd_unit_file_basename: "{{ service_files_dir }}/{{ systemd_unit_name }}"
+  when: protocol == "tcp"
+

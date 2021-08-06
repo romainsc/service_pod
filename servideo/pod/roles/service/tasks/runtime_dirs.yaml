@@ -1,0 +1,4 @@
+- import_tasks: runtime_dir.yaml
+  vars:
+    directory: "{{ item }}"
+  loop: "{{ directories }}"

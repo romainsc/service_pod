@@ -1,24 +1,42 @@
-- name: Init the podman port mapping args
-  set_fact:
-    podman_port_mapping_args: ""
+- name: Copy service pod yaml
+  copy:
+    src: "{{ servideo_config_dir }}{{service_systemd_name}}/pod/service_pod.yaml"
+    dest: "{{ ansible_env.HOME }}/service_pod.yaml"
+  become: true
+  become_user: "{{ service_user }}"
 
-- name: build the podman port mapping args
+- name: Copy runtime directories
+  import_tasks: runtime_dirs.yaml
+  become: true
+  become_user: "{{ service_user }}"
+  vars:
+    selinux_labels: "{{ item.selinux_labels }}"
+    directories: "{{ item.directories }}"
+  loop: "{{ runtime_directories }}"
+  when: runtime_directories is defined
+
+- name: Create empty list for images to pull if not defined
   set_fact:
-    podman_port_mapping_args: "{{ podman_port_mapping_args }} -p {{ item.host_port }}:{{ item.exposed_port }}/{{ item.protocol }}"
-  loop: "{{ port_mapping }}"
+    container_images_to_pull: "{{ [] }}"
+  when: container_images_to_pull is not defined
+
+- name: Create empty list for images to build if not defined
+  set_fact:
+    container_images_to_build: "{{ [] }}"
+  when: container_images_to_build is not defined
+
 
 - name: Register "{{ service_systemd_name }}" systemd unit
   vars:
     container_run_as_user: "{{ service_user }}"
     container_run_as_group: "{{ service_user }}"
-    container_image_list: "{{ service_container_image_names }}"
+    container_image_list: "{{ container_images_to_build + container_images_to_pull }}"
     container_name: "{{ service_systemd_name }}"
-    container_run_args: >-
-      --rm
-      {{ podman_port_mapping_args }}
+    container_pod_yaml: "{{ ansible_env.HOME }}/service_pod.yaml"
     container_state: running
   import_role:
     name: ikke_t.podman_container_systemd
+
 - name: Ensure the service is started
   become: true
   become_user: "{{ service_user }}"

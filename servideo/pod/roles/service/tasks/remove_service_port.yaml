@@ -1,0 +1,21 @@
+- name: Close firewall port {{ port }}
+  firewalld:
+    port: "{{ port }}"
+    zone: public
+    permanent: yes
+    immediate: yes
+    state: disabled
+
+- name: Remove socat for {{ port }}
+  import_tasks: remove_proxy_socat.yaml
+  vars:
+    systemd_unit_name: "socat-to-{{ service_systemd_name }}-port-{{ ext_port }}"
+    systemd_unit_file_basename: "{{ service_files_dir }}/{{ systemd_unit_name }}"
+  when: protocol == "udp"
+
+- name: Remove proxyd for {{ port }}
+  import_tasks: remove_proxyd.yaml
+    systemd_unit_name: "proxyd-to-{{ service_systemd_name }}-port-{{ ext_port }}"
+    systemd_unit_file_basename: "{{ service_files_dir }}/{{ systemd_unit_name }}"
+  when: protocol == "tcp"
+

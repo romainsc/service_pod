@@ -1,35 +1,11 @@
 ---
 # tasks file for service
-- name: Prepare, build, install and enable {{ service_name }} container
-  block:
-
-  - name: Build the "{{ service_systemd_name }}" container image
-    import_tasks: build.yml
-    become: true
-    become_user: "{{ service_user }}"
-  - name: Clean the "{{ service_systemd_name }}" build space
-    import_tasks: clean_builddir.yml
-    become: true
-    become_user: "{{ service_user }}"
-  - name: Deploy the "{{ service_systemd_name }}" systemd unit
-    import_tasks: deploy.yml
-    become: true
-  - name: Set up port forwarding for "{{ service_systemd_name }}"
-    import_tasks: port_forward.yml
-    become: true
+- name: Prepare, build, install and enable {{ service_systemd_name }} service pod
+  import_tasks: create_service.yaml
   when: service_state == "present"
 
-- name: Disable and remove the {{ service_name }} container and service
-  block:
-
-  - name: Remove the {{ service_name }} service and dependencies
-    import_tasks: undeploy.yml
-    become: true
-  - name: Remove the {{ service_name }} container image
-    import_tasks: clean_image.yml
-    become: true
-    become_user: "{{ service_user }}"
-
+- name: Disable and remove the {{ service_systemd_name }} services and user
+  import_tasks: del_service.yaml
   when: service_state == "absent"
 
 

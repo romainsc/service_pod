@@ -1,0 +1,14 @@
+- name: Remove the network access and proxies
+  import_tasks: port_unforward.yaml
+  become: true
+
+- name: Remove the {{ service_systemd_name }} pod service
+  import_tasks: undeploy.yml
+  become: true
+  
+- name: Remove {{ service_systemd_name }} system account
+  user:
+    name: "{{ service_user }}"
+    state: absent
+    remove: yes
+

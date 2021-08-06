@@ -1,0 +1,32 @@
+- name: Create the build directory if it does not exist
+  tempfile:
+    path: "{{ build_basedir }}/{{ builddir }}"
+    state: directory
+    suffix: "{{ builddir_suffix }}"
+  register: builddir
+
+- name: Copy the Dockerfile
+  template:
+    src: Dockerfile-{{ image_name }}.j2
+    dest: "{{ builddir }}/Dockerfile"
+- name: Copy the build data
+  copy:
+    src: "{{ servideo_config_dir }}{{service_systemd_name}}/{{ image_name }}"
+    dest: "{{ builddir }}"
+
+- name: Build "{{ service_systemd_name }}" container image
+  containers.podman.podman_image:
+   name: "{{ image_name }}"
+   path: "{{ builddir }}"
+   force: true
+   username: "{{ redhat_portal_username }}"
+   password: "{{ redhat_portal_password }}"
+   build:
+    annotation:
+    app: "{{ service_systemd_name }}"
+
+- name: Delete build directory
+  file:
+    path: "{{ builddir }}"
+    state: absent
+
