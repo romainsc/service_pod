@@ -5,10 +5,16 @@
 - name: Remove the {{ service_systemd_name }} pod service
   import_tasks: undeploy.yml
   become: true
+
+- name: Kill all the user processes
+  shell: "killall -s KILL -u {{ service_user }}"
+  become: true
+  become_user: "{{ service_user }}"
   
 - name: Remove {{ service_systemd_name }} system account
   user:
     name: "{{ service_user }}"
     state: absent
+    force: yes
     remove: yes
 
