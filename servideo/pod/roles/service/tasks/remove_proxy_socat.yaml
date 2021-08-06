@@ -1,0 +1,17 @@
+- name: Ensure socat proxy to {{ service_systemd_name }} is stopped
+  systemd:
+    name: "{{ systemd_unit_name }}"
+    state: stopped
+    scope: system
+- name: Ensure socat proxy to {{ service_systemd_name }} is disabled at boot
+  systemd:
+    name: "{{ systemd_unit_name }}"
+    enabled: no
+    daemon_reload: yes
+    scope: system
+- name: Delete the socat proxy/proxies to {{ service_systemd_name }}
+  file:
+    src: systemd-service-proxy-socat.j2
+    path: "{{ systemd_unit_file_basename }}.service"
+    state: absent
+

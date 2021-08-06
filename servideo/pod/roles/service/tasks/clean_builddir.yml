@@ -1,4 +1,0 @@
-- name: Delete build directory
-  file:
-    path: "{{ build_basedir }}{{ builddir }}"
-    state: absent
