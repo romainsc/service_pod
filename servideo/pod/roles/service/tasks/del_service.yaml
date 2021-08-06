@@ -15,6 +15,5 @@
   user:
     name: "{{ service_user }}"
     state: absent
-    force: yes
     remove: yes
 
