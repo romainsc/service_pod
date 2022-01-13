@@ -12,14 +12,14 @@
     container_run_as_group: "{{ service_user }}"
     container_run_as_user: "{{ service_user }}"
 
-  - name: Check if user is lingering
-    stat:
-      path: "/var/lib/systemd/linger/{{ service_user }}"
-    register: user_lingering
-    when: service_user != "root"
+- name: Check if user is lingering
+  stat:
+    path: "/var/lib/systemd/linger/{{ service_user }}"
+  register: user_lingering
+  when: service_user != "root"
 
-  - name: Enable lingering is needed
-    command: "loginctl enable-linger {{ service_user }}"
-    when:
-      - service_user != "root"
-      - not user_lingering.stat.exists
+- name: Enable lingering is needed
+  command: "loginctl enable-linger {{ service_user }}"
+  when:
+    - service_user != "root"
+    - not user_lingering.stat.exists
