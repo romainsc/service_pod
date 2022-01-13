@@ -1,21 +1,21 @@
-- name: Add ”{{ service_systemd_name }}” system account
-  user:
-    name: "{{ service_user }}"
-    comment: "{{ service_systemd_name }} system account"
-    system: yes
-    state: present
-- name: Check "{{ service_systemd_name }}" subid
-  import_role:
-    name: ikke_t.podman_container_systemd
-    tasks_from: check_subid
-  vars:
-    container_run_as_group: "{{ service_user }}"
-    container_run_as_user: "{{ service_user }}"
-  
-- name: Build the "{{ service_systemd_name }}" container image
-  import_tasks: build.yml
+- name: Create user
+  import_tasks: create_user.yml
   become: true
-  become_user: "{{ service_user }}"
+  
+- name: Build container images if applicable
+  block:
+  - name: Prepare the "{{ service_systemd_name }}" build environment
+    import_tasks: prepare_build.yml
+    become: true
+    become_user: "{{ service_user }}"
+  - name: Build the "{{ service_systemd_name }}" container image
+    import_tasks: build.yml
+    become: true
+    become_user: "{{ service_user }}"
+  - name: Clean build directory
+    import_tasks: clean_builddir.yml
+    become: true
+    become_user: "{{ service_user }}"
   when: container_images_to_build is defined
   
 - name: Deploy the "{{ service_systemd_name }}" systemd unit

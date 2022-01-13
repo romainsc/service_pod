@@ -1,5 +1,5 @@
 - name: Remove the network access and proxies
-  import_tasks: port_unforward.yaml
+  import_tasks: port_unforward.yml
   become: true
 
 - name: Remove the {{ service_systemd_name }} pod service

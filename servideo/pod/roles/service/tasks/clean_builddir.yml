@@ -1,0 +1,5 @@
+- name: Delete build directory
+  file:
+    path: "{{ build_basedir }}/{{ builddir }}/{{ item }}"
+    state: absent
+  loop: "{{ container_images_to_build }}"

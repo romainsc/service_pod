@@ -1,7 +1,10 @@
 - name: Copy "{{ directory }}" on host
+  become: true
+  become_user: "{{ service_user }}"
   copy:
     src: "{{ servideo_config_dir }}{{service_systemd_name}}/{{ directory }}"
     dest: "{{ ansible_env.HOME }}/{{ directory }}"
+    mode: "{{ mode }}"
 
 - name: Set SElinux labels
   become: true

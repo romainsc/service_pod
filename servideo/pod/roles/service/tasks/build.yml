@@ -1,8 +1,11 @@
-  - name: Build the "{{ item }}" container image
-    import_tasks: build_image.yml
-    become: true
-    become_user: "{{ service_user }}"
-    vars:
-      image_name: "{{ item }}"
-    loop: "{{ container_images_to_build }}"
-
+- name: Build "{{ service_systemd_name }}" container image
+  containers.podman.podman_image:
+          name: "{{ item }}"
+          path: "{{ build_basedir }}{{ builddir }}/{{ item }}"
+          force: true
+          username: "{{ redhat_portal_username }}"
+          password: "{{ redhat_portal_password }}"
+          build:
+            annotation:
+             app: "{{ service_systemd_name }}"
+  loop: "{{ container_images_to_build }}"

@@ -3,6 +3,7 @@
 #service_user: "system_username"
 #service_systemd_name: "Human Readable name"
 builddir_suffix: "build"
+#build_artefact_basedir: "{{ servideo_config_dir }}item"
 #container_images_to_build:
 #   - "blabla"
 #container_images_to_pull:
@@ -11,7 +12,8 @@ builddir_suffix: "build"
 #   - selinux_label:
 #       - "etc_t"
 #     directories:
-#       - "config"
+#       - mode: '0770'
+#         name: "config"
 #port_mapping:
 #  - exposed_port: "container_port"
 #    host_port: "port_on loopback"

@@ -1,4 +1,4 @@
-- name: Open firewall port {{ port }}
+- name: Enable service port {{ service_name }}
   firewalld:
     port: "{{ port }}"
     zone: public

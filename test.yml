@@ -1,0 +1,15 @@
+---
+- name: test
+  hosts: hetzners
+  vars:
+    la: "{{ [] }}"
+    lb:
+     - 4
+     - 5
+     - 6
+  tasks:
+    - name: Set correct SElinux context
+      debug:
+        msg: "{{ la + lb }}"
+
+       

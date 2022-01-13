@@ -6,9 +6,7 @@
   become_user: "{{ service_user }}"
 
 - name: Copy runtime directories
-  import_tasks: runtime_dirs.yaml
-  become: true
-  become_user: "{{ service_user }}"
+  include_tasks: runtime_dirs.yaml
   vars:
     selinux_labels: "{{ item.selinux_labels }}"
     directories: "{{ item.directories }}"

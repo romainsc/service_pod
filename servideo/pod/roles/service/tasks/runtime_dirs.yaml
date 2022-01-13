@@ -1,4 +1,5 @@
-- import_tasks: runtime_dir.yaml
+- include_tasks: runtime_dir.yaml
   vars:
-    directory: "{{ item }}"
+    directory: "{{ item.name }}"
+    mode: "{{ item.mode }}"
   loop: "{{ directories }}"

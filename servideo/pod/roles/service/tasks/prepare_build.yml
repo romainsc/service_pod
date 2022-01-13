@@ -1,0 +1,17 @@
+- name: Create the build directory if it does not exist
+  file:
+    path: "{{ build_basedir }}/{{ builddir }}/{{ item }}"
+    state: directory
+  loop: "{{ container_images_to_build }}"
+- name: Generate the Dockerfile
+  template:
+    src: Dockerfile-{{ item }}.j2
+    dest: "{{ build_basedir }}/{{ builddir }}/{{ item }}/Dockerfile"
+  loop: "{{ container_images_to_build }}"
+- name: Copy build artifacts
+  copy:
+    src: "{{ build_artefact_basedir }}/{{ item }}"
+    dest: "{{ build_basedir }}/{{ builddir }}/{{ item }}/"
+  loop: "{{ container_images_to_build }}"
+  when: build_artefact_basedir is defined
+  

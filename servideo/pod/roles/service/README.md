@@ -1,4 +1,4 @@
-DNS server for Servidéo
+Servidéo services pod role
 =========
 
 ## References
@@ -8,19 +8,32 @@ DNS server for Servidéo
 
 ## Service logic
 
-- Built on the target host
+* Almost everything is driven by the role variables values.
+* Service is registered and deployed in user space.
+* Port forwarding are system units
+### Deployment (`state == present`)
 
-- run as non priviledged user
+1. Ensure the service user exists
+2. If build is needed:
+   1. Creates build directory
+   2. Copy container definition file
+   3. Build the image and store it in the user local registry
+   4. Clean the build directory
+3. Copy the service pod
+4. You need to ensure all the service needed folders exist
+5. Register the service as a systemd unit.
+6. Start the service
+7. Set up the port proxy systemd unit:
+   * `socat` for UDP
+   * `systemd-proxyd` for TCP
+### Undeploy (`state == absent`)
 
-- Expose port  (`-p 1053:1053/udp` is your friend)
-
-- Runned via systemd
-
-- Deployed via the [podman_container_systemd role](https://galaxy.ansible.com/ikke_t/podman_container_systemd)
-
-- UDP will be proxied with socat
-
-- TCP is proxied via systemd-socket-proxyd
+1. Stop the port forwarding
+2. remove the port forwarding unit
+3. Stop the service
+4. Killall user processes
+5. Remove user
+6. If specified, remove user directory while removing user
 
 ## Requirements
 

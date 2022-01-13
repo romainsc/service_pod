@@ -1,5 +1,5 @@
 - name: Handle removal of service port {{ host_port }} on host
-  import_tasks: remove_service_port.yaml
+  include_tasks: remove_service_port.yaml
   vars:
     host_port: item.host_port
     ext_port: item.ext_port
