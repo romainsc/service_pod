@@ -1,7 +1,13 @@
+- name: Get the service user information
+  user:
+    name: "{{ service_user }}"
+    state: present
+  register: service_user_data
+  
 - name: Copy service pod yaml
   copy:
     src: "{{ servideo_config_dir }}{{service_systemd_name}}/pod/service_pod.yaml"
-    dest: "{{ ansible_env.HOME }}/service_pod.yaml"
+    dest: "{{ service_user_data.home }}/service_pod.yaml"
   become: true
   become_user: "{{ service_user }}"
 
@@ -10,6 +16,7 @@
   vars:
     selinux_labels: "{{ item.selinux_labels }}"
     directories: "{{ item.directories }}"
+    service_homedir: "{{ service_user_data.home }}"
   loop: "{{ runtime_directories }}"
   when: runtime_directories is defined
 
@@ -30,7 +37,7 @@
     container_run_as_group: "{{ service_user }}"
     container_image_list: "{{ container_images_to_build + container_images_to_pull }}"
     container_name: "{{ service_systemd_name }}"
-    container_pod_yaml: "{{ ansible_env.HOME }}/service_pod.yaml"
+    container_pod_yaml: "{{ service_user_data.home }}/service_pod.yaml"
     container_state: running
   import_role:
     name: ikke_t.podman_container_systemd

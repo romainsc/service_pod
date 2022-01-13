@@ -1,5 +1,7 @@
 - include_tasks: runtime_dir.yaml
   vars:
-    directory: "{{ item.name }}"
-    mode: "{{ item.mode }}"
+    directory: "{{ directory_item.name }}"
+    mode: "{{ directory_item.mode }}"
   loop: "{{ directories }}"
+  loop_control:
+    loop_var: directory_item

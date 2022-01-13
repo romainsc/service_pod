@@ -3,20 +3,22 @@
   become_user: "{{ service_user }}"
   copy:
     src: "{{ servideo_config_dir }}{{service_systemd_name}}/{{ directory }}"
-    dest: "{{ ansible_env.HOME }}/{{ directory }}"
+    dest: "{{ service_homedir }}/{{ directory }}"
     mode: "{{ mode }}"
 
 - name: Set SElinux labels
   become: true
   become_user: root
   sefcontext:
-    target: '{{ ansible_env.HOME }}/{{ directory }}(/.*)?'
-    setype: {{ item }}
+    target: '{{ service_homedir }}/{{ directory }}(/.*)?'
+    setype: "{{ selinux_label }}"
     state: present
   loop: "{{ selinux_labels }}"
+  loop_control:
+    loop_var: selinux_label
 
 - name: Apply new SELinux file context to filesystem
-  command: restorecon -irv "{{ ansible_env.HOME }}/{{ directory }}"
+  command: restorecon -irv "{{ service_homedir }}/{{ directory }}"
   become: true
   become_user: root
 
