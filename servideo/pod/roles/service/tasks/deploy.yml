@@ -20,22 +20,25 @@
   loop: "{{ runtime_directories }}"
   when: runtime_directories is defined
 
-- name: Create empty list for images to pull if not defined
+- name: Create empty list of built if no container images have been built
   set_fact:
-    container_images_to_pull: "{{ [] }}"
-  when: container_images_to_pull is not defined
+    built_container_images: "{{ [] }}"
+#  when: container_images_to_build is not defined
 
-- name: Create empty list for images to build if not defined
-  set_fact:
-    container_images_to_build: "{{ [] }}"
-  when: container_images_to_build is not defined
+# maybe later if registry 
+#- name: prefix localhost the built container images (if applicable)
+#  set_fact:
+#    built_container_images: "{{ ['localhost/'] | product(container_images_to_build) | map('join') | list }}"
+#  when: container_images_to_build is defined
 
+#- name: debug
+#  debug: var=built_container_images
 
 - name: Register "{{ service_systemd_name }}" systemd unit
   vars:
     container_run_as_user: "{{ service_user }}"
     container_run_as_group: "{{ service_user }}"
-    container_image_list: "{{ container_images_to_build + container_images_to_pull }}"
+    container_image_list: "{{ built_container_images + container_images_to_pull }}"
     container_name: "{{ service_systemd_name }}"
     container_pod_yaml: "{{ service_user_data.home }}/service_pod.yaml"
     container_state: running
@@ -47,6 +50,7 @@
   become_user: "{{ service_user }}"
   systemd:
    name: "{{ service_systemd_name }}-container-pod-{{ service_user }}.service" 
+   daemon-reload: yes
    scope: user
    state: started
 
