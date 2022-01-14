@@ -15,6 +15,7 @@
 
 - name: Set up proxyd for {{ port }}
   import_tasks: proxyd.yaml
+  vars: 
     systemd_unit_name: "proxyd-to-{{ service_systemd_name }}-port-{{ ext_port }}"
     systemd_unit_file_basename: "{{ service_files_dir }}/{{ systemd_unit_name }}"
   when: protocol == "tcp"

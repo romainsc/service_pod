@@ -38,6 +38,8 @@
   vars:
     container_run_as_user: "{{ service_user }}"
     container_run_as_group: "{{ service_user }}"
+    container_image_user: "{{ redhat_portal_username }}"
+    container_image_password: "{{ redhat_portal_password }}"
     container_image_list: "{{ built_container_images + container_images_to_pull }}"
     container_name: "{{ service_systemd_name }}"
     container_pod_yaml: "{{ service_user_data.home }}/service_pod.yaml"

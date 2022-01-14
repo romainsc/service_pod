@@ -2,7 +2,6 @@
   package:
     name: socat
     state: present
-- name: 
 - name: Deploy the socat proxy/proxies to {{ service_systemd_name }}
   template:
     src: systemd-service-proxy-socat.j2

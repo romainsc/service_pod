@@ -1,27 +1,27 @@
-- name: Setup systemd stream socket(s) for proxyd for {{ service_systemd_name }}
+- name: Setup systemd stream socket(s) for proxyd for "{{ service_systemd_name }}"
   template:
     src: systemd-socket-proxyd.j2
     dest: "{{ systemd_unit_file_basename }}.socket"
     owner: root
     group: root
-- name: Setup systemd stream service(s) for proxyd for {{ service_systemd_name }}
+- name: Setup systemd stream service(s) for proxyd for "{{ service_systemd_name }}"
   template:
     src: systemd-service-proxyd.j2
     dest: "{{ systemd_unit_file_basename }}.service"
     owner: root
     group: root
-- name: Ensure proxyd socket to {{ service_systemd_name }} is enabled at boot
+- name: Ensure proxyd socket to "{{ service_systemd_name }}" is enabled at boot
   systemd:
     name: "{{ systemd_unit_name }}.socket"
     enabled: yes
     daemon_reload: yes
     scope: system
-- name: Ensure proxyd service for {{ service_systemd_name }} is stopped
+- name: Ensure proxyd service for "{{ service_systemd_name }}" is stopped
   systemd:
     name: "{{ systemd_unit_name }}.service"
     state: stopped
     scope: system
-- name: Ensure proxyd socket to {{ service_systemd_name }} is restarted
+- name: Ensure proxyd socket to "{{ service_systemd_name }}" is restarted
   systemd:
     name: "{{ systemd_unit_name }}.socket"
     state: restarted

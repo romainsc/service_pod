@@ -1,9 +1,9 @@
-- name: Handle service port {{ host_port }} on host
+- name: Handle service ports mapping on host
   include_tasks: service_port.yaml
   vars:
-    host_port: item.host_port
-    ext_port: item.ext_port
-    protocol: item.protocol
+    host_port: "{{ item.host_port }}"
+    ext_port: "{{ item.ext_port }}"
+    protocol: "{{ item.protocol }}"
     port: "{{ item.ext_port }}/{{ item.protocol }}"
     service_files_dir: '/etc/systemd/system'
   loop: "{{ port_mapping }}"
