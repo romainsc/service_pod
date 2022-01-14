@@ -1,9 +1,17 @@
+- name: Create "{{ directory }}" on host
+  become: true
+  become_user: "{{ service_user }}"
+  file:
+    path: "{{ service_homedir }}/{{ directory }}"
+    mode: "{{ mode }}"
+    state: directory
+
 - name: Copy "{{ directory }}" on host
   become: true
   become_user: "{{ service_user }}"
   copy:
     src: "{{ servideo_config_dir }}{{service_systemd_name}}/{{ directory }}"
-    dest: "{{ service_homedir }}/{{ directory }}"
+    dest: "{{ service_homedir }}/"
     mode: "{{ mode }}"
 
 - name: Set SElinux labels
