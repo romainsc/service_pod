@@ -13,8 +13,8 @@
     container_run_as_user: "{{ service_user }}"
 
 - name: Check if user is lingering
-  stat:
-    path: "/var/lib/systemd/linger/{{ service_user }}"
+  shell: "loginctl user-status lasaillante || /bin/true"
+  changed_when: false
   register: user_lingering
   when: service_user != "root"
 
@@ -22,4 +22,5 @@
   command: "loginctl enable-linger {{ service_user }}"
   when:
     - service_user != "root"
-    - not user_lingering.stat.exists
+    - '"Failed" in user_lingering.stderr'
+
