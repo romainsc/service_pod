@@ -12,6 +12,7 @@
   copy:
     src: "{{ servideo_config_dir }}{{service_systemd_name}}/{{ directory }}"
     dest: "{{ service_homedir }}/"
+    directory_mode: "{{ mode }}"
     mode: "{{ mode }}"
 
 - name: Set SElinux labels
