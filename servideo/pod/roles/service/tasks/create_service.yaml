@@ -1,7 +1,11 @@
 - name: Create user
   import_tasks: create_user.yml
   become: true
-  
+
+- name: Registries log in
+  include_tasks: login_registry.yaml
+  loop: "{{ authenticated_registries | default([]) }}"
+
 - name: Build container images if applicable
   block:
   - name: Prepare the "{{ service_systemd_name }}" build environment

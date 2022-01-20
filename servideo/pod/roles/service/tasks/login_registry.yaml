@@ -1,0 +1,7 @@
+- name: Login into "{{ item.registry }}"
+  become: true
+  become_user: "{{ service_user }}"
+  containers.podman.podman_login:
+    registry: "{{ item.registry }}"
+    username: "{{ item.username }}"
+    password: "{{ item.password }}"
