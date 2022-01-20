@@ -13,7 +13,7 @@
     container_run_as_user: "{{ service_user }}"
 
 - name: Check if user is lingering
-  shell: "loginctl user-status lasaillante || /bin/true"
+  shell: "loginctl user-status {{ service_user }} || /bin/true"
   changed_when: false
   register: user_lingering
   when: service_user != "root"
