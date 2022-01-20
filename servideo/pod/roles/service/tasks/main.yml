@@ -5,6 +5,6 @@
   when: service_state == "present"
 
 - name: Disable and remove the {{ service_systemd_name }} services and user
-  import_tasks: del_service.yaml
+  import_tasks: del_service.yaml # If faut disable le linger avant del user, supprimer les label selinux aussi
   when: service_state == "absent"
 
